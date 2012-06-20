@@ -28,6 +28,23 @@
 
 #include "Adafruit_MPL115A2.h"
 
+static uint8_t i2cread(void) {
+  #if ARDUINO >= 100
+  return Wire.read();
+  #else
+  return Wire.receive();
+  #endif
+}
+
+
+static void i2cwrite(uint8_t x) {
+  #if ARDUINO >= 100
+  Wire.write((uint8_t)x);
+  #else
+  Wire.send(x);
+  #endif
+}
+
 /**************************************************************************/
 /*!
     @brief  Gets the factory-set coefficients for this particular sensor
@@ -40,26 +57,15 @@ void Adafruit_MPL115A2::readCoefficients() {
   int16_t c12coeff;
 
   Wire.beginTransmission(MPL115A2_ADDRESS);
-  #if ARDUINO >= 100
-    Wire.write((uint8_t)MPL115A2_REGISTER_A0_COEFF_MSB);
-  #else
-    Wire.send((uint8_t)MPL115A2_REGISTER_A0_COEFF_MSB);
-  #endif
+  i2cwrite((uint8_t)MPL115A2_REGISTER_A0_COEFF_MSB);
   Wire.endTransmission();
 
   Wire.requestFrom(MPL115A2_ADDRESS, 8);
-  #if ARDUINO >= 100
-    a0coeff = ((Wire.read() << 8) | Wire.read());
-    b1coeff = ((Wire.read() << 8) | Wire.read());
-    b2coeff = ((Wire.read() << 8) | Wire.read());
-    c12coeff = (((Wire.read() << 8) | Wire.read())) >> 2;
-  #else
-    a0coeff = ((Wire.receive() << 8) | Wire.receive());
-    b1coeff = ((Wire.receive() << 8) | Wire.receive());
-    b2coeff = ((Wire.receive() << 8) | Wire.receive());
-    c12coeff = (((Wire.receive() << 8) | Wire.receive())) >> 2;
-  #endif
-
+  a0coeff = ((i2cread() << 8) | i2cread());
+  b1coeff = ((i2cread() << 8) | i2cread());
+  b2coeff = ((i2cread() << 8) | i2cread());
+  c12coeff = (((i2cread() << 8) | i2cread())) >> 2;
+  
   _mpl115a2_a0 = (float)a0coeff / 8;
   _mpl115a2_b1 = (float)b1coeff / 8192;
   _mpl115a2_b2 = (float)b2coeff / 16384;
@@ -100,40 +106,61 @@ float Adafruit_MPL115A2::getPressure() {
 
   // Get raw pressure and temperature settings
   Wire.beginTransmission(MPL115A2_ADDRESS);
-  #if ARDUINO >= 100
-    Wire.write((uint8_t)MPL115A2_REGISTER_STARTCONVERSION);
-    Wire.write((uint8_t)0x00);
-  #else
-    Wire.send((uint8_t)MPL115A2_REGISTER_STARTCONVERSION);
-    Wire.send((uint8_t)0x00);
-  #endif
+  i2cwrite((uint8_t)MPL115A2_REGISTER_STARTCONVERSION);
+  i2cwrite((uint8_t)0x00);
   Wire.endTransmission();
 
   // Wait a bit for the conversion to complete (3ms max)
   delay(5);
 
   Wire.beginTransmission(MPL115A2_ADDRESS);
-  #if ARDUINO >= 100
-    Wire.write((uint8_t)MPL115A2_REGISTER_PRESSURE_MSB);  // Register
-  #else
-    Wire.send((uint8_t)MPL115A2_REGISTER_A0_COEFF_MSB);   // Register
-  #endif
+  i2cwrite((uint8_t)MPL115A2_REGISTER_PRESSURE_MSB);  // Register
   Wire.endTransmission();
 
   Wire.requestFrom(MPL115A2_ADDRESS, 4);
-  #if ARDUINO >= 100
-    pressure = ((Wire.read() << 8) | Wire.read()) >> 6;
-    temp = ((Wire.read() << 8) | Wire.read()) >> 6;
-  #else
-    pressure = ((Wire.receive() << 8) | Wire.receive()) >> 6;
-    temp = ((Wire.receive() << 8) | Wire.receive()) >> 6;
-  #endif
-
+  pressure = ((i2cread() << 8) | i2cread()) >> 6;
+  temp = ((i2cread() << 8) | i2cread()) >> 6;
+  
   // See datasheet p.6 for evaluation sequence
   pressureComp = _mpl115a2_a0 + (_mpl115a2_b1 + _mpl115a2_c12 * temp ) * pressure + _mpl115a2_b2 * temp;
 
   // Return pressure as floating point value
   return ((65.0F / 1023.0F)*(float)pressureComp) + 50;
+}
+
+
+/**************************************************************************/
+/*!
+    @brief  Gets the floating-point temperature in Centigrade
+*/
+/**************************************************************************/
+float Adafruit_MPL115A2::getTemperature() {
+  uint16_t 	pressure, temp;
+  float     pressureComp;
+
+  // Get raw pressure and temperature settings
+  Wire.beginTransmission(MPL115A2_ADDRESS);
+  i2cwrite((uint8_t)MPL115A2_REGISTER_STARTCONVERSION);
+  i2cwrite((uint8_t)0x00);
+  Wire.endTransmission();
+
+  // Wait a bit for the conversion to complete (3ms max)
+  delay(5);
+
+  Wire.beginTransmission(MPL115A2_ADDRESS);
+  i2cwrite((uint8_t)MPL115A2_REGISTER_PRESSURE_MSB);  // Register
+  Wire.endTransmission();
+
+  Wire.requestFrom(MPL115A2_ADDRESS, 4);
+
+  pressure = ((i2cread() << 8) | i2cread()) >> 6;
+  temp = ((i2cread() << 8) | i2cread()) >> 6;
+  
+  float centigrade = (temp - 472);
+  centigrade /= 5.35;
+  centigrade = 25 - centigrade;
+  
+  return centigrade;
 }
 
 
