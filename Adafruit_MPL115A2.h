@@ -1,17 +1,17 @@
 /**************************************************************************/
-/*! 
+/*!
     @file     Adafruit_MPL115A2.h
     @author   K. Townsend (Adafruit Industries)
-	@license  BSD (see license.txt)
-	
-	This is a library for the Adafruit MPL115A2 breakout board
-	----> https://www.adafruit.com/products/???
-	
-	Adafruit invests time and resources providing this open source code, 
-	please support Adafruit and open-source hardware by purchasing 
-	products from Adafruit!
+    @license  BSD (see license.txt)
 
-	@section  HISTORY
+    This is a library for the Adafruit MPL115A2 breakout board
+    ----> https://www.adafruit.com/products/???
+
+    Adafruit invests time and resources providing this open source code,
+    please support Adafruit and open-source hardware by purchasing
+    products from Adafruit!
+
+    @section  HISTORY
 
     v1.0  - First release
 */
@@ -60,6 +60,6 @@ class Adafruit_MPL115A2{
   float _mpl115a2_b1;
   float _mpl115a2_b2;
   float _mpl115a2_c12;
-  
+
   void readCoefficients(void);
 };

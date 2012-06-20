@@ -1,19 +1,19 @@
 /**************************************************************************/
-/*! 
+/*!
     @file     Adafruit_MPL115A2.cpp
     @author   K.Townsend (Adafruit Industries)
-	@license  BSD (see license.txt)
-	
-	Driver for the MPL115A2 barometric pressure sensor
+    @license  BSD (see license.txt)
 
-	This is a library for the Adafruit MPL115A2 breakout
-	----> https://www.adafruit.com/products/???
-		
-	Adafruit invests time and resources providing this open source code, 
-	please support Adafruit and open-source hardware by purchasing 
-	products from Adafruit!
+    Driver for the MPL115A2 barometric pressure sensor
 
-	@section  HISTORY
+    This is a library for the Adafruit MPL115A2 breakout
+    ----> https://www.adafruit.com/products/???
+
+    Adafruit invests time and resources providing this open source code,
+    please support Adafruit and open-source hardware by purchasing
+    products from Adafruit!
+
+    @section  HISTORY
 
     v1.0 - First release
 */
@@ -29,7 +29,7 @@
 #include "Adafruit_MPL115A2.h"
 
 /**************************************************************************/
-/*! 
+/*!
     @brief  Gets the factory-set coefficients for this particular sensor
 */
 /**************************************************************************/
@@ -45,9 +45,9 @@ void Adafruit_MPL115A2::readCoefficients() {
   #else
     Wire.send((uint8_t)MPL115A2_REGISTER_A0_COEFF_MSB);
   #endif
-  Wire.endTransmission();  
+  Wire.endTransmission();
 
-  Wire.requestFrom(MPL115A2_ADDRESS, 8);  
+  Wire.requestFrom(MPL115A2_ADDRESS, 8);
   #if ARDUINO >= 100
     a0coeff = ((Wire.read() << 8) | Wire.read());
     b1coeff = ((Wire.read() << 8) | Wire.read());
@@ -67,7 +67,7 @@ void Adafruit_MPL115A2::readCoefficients() {
 }
 
 /**************************************************************************/
-/*! 
+/*!
     @brief  Instantiates a new MPL115A2 class
 */
 /**************************************************************************/
@@ -79,18 +79,18 @@ Adafruit_MPL115A2::Adafruit_MPL115A2() {
 }
 
 /**************************************************************************/
-/*! 
+/*!
     @brief  Setups the HW (reads coefficients values, etc.)
 */
 /**************************************************************************/
 void Adafruit_MPL115A2::begin() {
-  Wire.begin();    
+  Wire.begin();
   // Read factory coefficient values (this only needs to be done once)
   readCoefficients();
 }
 
 /**************************************************************************/
-/*! 
+/*!
     @brief  Gets the floating-point pressure level in kPa
 */
 /**************************************************************************/
@@ -118,7 +118,7 @@ float Adafruit_MPL115A2::getPressure() {
   #else
     Wire.send((uint8_t)MPL115A2_REGISTER_A0_COEFF_MSB);   // Register
   #endif
-  Wire.endTransmission();  
+  Wire.endTransmission();
 
   Wire.requestFrom(MPL115A2_ADDRESS, 4);
   #if ARDUINO >= 100
