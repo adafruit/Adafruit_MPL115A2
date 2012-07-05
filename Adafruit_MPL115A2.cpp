@@ -35,7 +35,7 @@ static uint8_t i2cread(void) {
   #else
   x = Wire.receive();
   #endif
-  Serial.print("0x"); Serial.println(x, HEX);
+  //Serial.print("0x"); Serial.println(x, HEX);
   return x;
 }
 
@@ -68,11 +68,13 @@ void Adafruit_MPL115A2::readCoefficients() {
   b1coeff = ((i2cread() << 8) | i2cread());
   b2coeff = ((i2cread() << 8) | i2cread());
   c12coeff = (((i2cread() << 8) | i2cread())) >> 2;
-  
+
+  /*  
   Serial.print("A0 = "); Serial.println(a0coeff, HEX);
   Serial.print("B1 = "); Serial.println(b1coeff, HEX);
   Serial.print("B2 = "); Serial.println(b2coeff, HEX);
   Serial.print("C12 = "); Serial.println(c12coeff, HEX);
+  */
 
   _mpl115a2_a0 = (float)a0coeff / 8;
   _mpl115a2_b1 = (float)b1coeff / 8192;
@@ -80,10 +82,12 @@ void Adafruit_MPL115A2::readCoefficients() {
   _mpl115a2_c12 = (float)c12coeff;
   _mpl115a2_c12 /= 4194304.0;
 
+  /*
   Serial.print("a0 = "); Serial.println(_mpl115a2_a0);
   Serial.print("b1 = "); Serial.println(_mpl115a2_b1);
   Serial.print("b2 = "); Serial.println(_mpl115a2_b2);
   Serial.print("c12 = "); Serial.println(_mpl115a2_c12);
+  */
 }
 
 /**************************************************************************/
@@ -169,9 +173,9 @@ float Adafruit_MPL115A2::getTemperature() {
 
   pressure = ((i2cread() << 8) | i2cread()) >> 6;
   temp = ((i2cread() << 8) | i2cread()) >> 6;
-  Serial.print("t = "); Serial.println(temp, HEX);
+  //Serial.print("t = "); Serial.println(temp, HEX);
   float centigrade = temp;
-  temp -= 472;
+  centigrade -= 498;
   centigrade /= -5.35;
   centigrade += 25;
   
