@@ -136,8 +136,8 @@ float Adafruit_MPL115A2::getPressure() {
   Wire.endTransmission();
 
   Wire.requestFrom(MPL115A2_ADDRESS, 4);
-  pressure = ((i2cread() << 8) | i2cread()) >> 6;
-  temp = ((i2cread() << 8) | i2cread()) >> 6;
+  pressure = (( (uint16_t) i2cread() << 8) | i2cread()) >> 6;
+  temp = (( (uint16_t) i2cread() << 8) | i2cread()) >> 6;
 
   // See datasheet p.6 for evaluation sequence
   pressureComp = _mpl115a2_a0 + (_mpl115a2_b1 + _mpl115a2_c12 * temp ) * pressure + _mpl115a2_b2 * temp;
@@ -171,8 +171,8 @@ float Adafruit_MPL115A2::getTemperature() {
 
   Wire.requestFrom(MPL115A2_ADDRESS, 4);
 
-  pressure = ((i2cread() << 8) | i2cread()) >> 6;
-  temp = ((i2cread() << 8) | i2cread()) >> 6;
+  pressure = (( (uint16_t) i2cread() << 8) | i2cread()) >> 6;
+  temp = (( (uint16_t) i2cread() << 8) | i2cread()) >> 6;
   //Serial.print("t = "); Serial.println(temp, HEX);
   float centigrade = temp;
   centigrade -= 498;
