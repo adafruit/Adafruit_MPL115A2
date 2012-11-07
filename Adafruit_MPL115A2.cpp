@@ -7,7 +7,7 @@
     Driver for the MPL115A2 barometric pressure sensor
 
     This is a library for the Adafruit MPL115A2 breakout
-    ----> https://www.adafruit.com/products/???
+    ----> https://www.adafruit.com/products/992
 
     Adafruit invests time and resources providing this open source code,
     please support Adafruit and open-source hardware by purchasing
@@ -16,6 +16,7 @@
     @section  HISTORY
 
     v1.0 - First release
+    v1.1 - Rick Sellens added casts to make bit shifts work below 22.6C
 */
 /**************************************************************************/
 #if ARDUINO >= 100
