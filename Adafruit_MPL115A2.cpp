@@ -17,6 +17,7 @@
 
     v1.0 - First release
     v1.1 - Rick Sellens added casts to make bit shifts work below 22.6C
+         - get both P and T with a single call to getPT
 */
 /**************************************************************************/
 #if ARDUINO >= 100
@@ -65,10 +66,10 @@ void Adafruit_MPL115A2::readCoefficients() {
   Wire.endTransmission();
 
   Wire.requestFrom(MPL115A2_ADDRESS, 8);
-  a0coeff = ((i2cread() << 8) | i2cread());
-  b1coeff = ((i2cread() << 8) | i2cread());
-  b2coeff = ((i2cread() << 8) | i2cread());
-  c12coeff = (((i2cread() << 8) | i2cread())) >> 2;
+  a0coeff = (( (uint16_t) i2cread() << 8) | i2cread());
+  b1coeff = (( (uint16_t) i2cread() << 8) | i2cread());
+  b2coeff = (( (uint16_t) i2cread() << 8) | i2cread());
+  c12coeff = (( (uint16_t) (i2cread() << 8) | i2cread())) >> 2;
 
   /*  
   Serial.print("A0 = "); Serial.println(a0coeff, HEX);
@@ -120,6 +121,31 @@ void Adafruit_MPL115A2::begin() {
 */
 /**************************************************************************/
 float Adafruit_MPL115A2::getPressure() {
+  float     pressureComp,centigrade;
+
+  getPT(&pressureComp, &centigrade);
+  return pressureComp;
+}
+
+
+/**************************************************************************/
+/*!
+    @brief  Gets the floating-point temperature in Centigrade
+*/
+/**************************************************************************/
+float Adafruit_MPL115A2::getTemperature() {
+  float     pressureComp, centigrade;
+
+  getPT(&pressureComp, &centigrade);
+  return centigrade;
+}
+
+/**************************************************************************/
+/*!
+    @brief  Gets both at once and saves a little time
+*/
+/**************************************************************************/
+void Adafruit_MPL115A2::getPT(float *P, float *T) {
   uint16_t 	pressure, temp;
   float     pressureComp;
 
@@ -143,44 +169,11 @@ float Adafruit_MPL115A2::getPressure() {
   // See datasheet p.6 for evaluation sequence
   pressureComp = _mpl115a2_a0 + (_mpl115a2_b1 + _mpl115a2_c12 * temp ) * pressure + _mpl115a2_b2 * temp;
 
-  // Return pressure as floating point value
-  return ((65.0F / 1023.0F)*(float)pressureComp) + 50;
-}
-
-
-/**************************************************************************/
-/*!
-    @brief  Gets the floating-point temperature in Centigrade
-*/
-/**************************************************************************/
-float Adafruit_MPL115A2::getTemperature() {
-  uint16_t 	pressure, temp;
-  float     pressureComp;
-
-  // Get raw pressure and temperature settings
-  Wire.beginTransmission(MPL115A2_ADDRESS);
-  i2cwrite((uint8_t)MPL115A2_REGISTER_STARTCONVERSION);
-  i2cwrite((uint8_t)0x00);
-  Wire.endTransmission();
-
-  // Wait a bit for the conversion to complete (3ms max)
-  delay(5);
-
-  Wire.beginTransmission(MPL115A2_ADDRESS);
-  i2cwrite((uint8_t)MPL115A2_REGISTER_PRESSURE_MSB);  // Register
-  Wire.endTransmission();
-
-  Wire.requestFrom(MPL115A2_ADDRESS, 4);
-
-  pressure = (( (uint16_t) i2cread() << 8) | i2cread()) >> 6;
-  temp = (( (uint16_t) i2cread() << 8) | i2cread()) >> 6;
-  //Serial.print("t = "); Serial.println(temp, HEX);
-  float centigrade = temp;
-  centigrade -= 498;
-  centigrade /= -5.35;
-  centigrade += 25;
+  // Return pressure and temperature as floating point values
+  *P = ((65.0F / 1023.0F) * pressureComp) + 50.0F;        // kPa
+  *T = ((float) temp - 498.0F) / -5.35F +25.0F;           // C
   
-  return centigrade;
 }
+
 
 
