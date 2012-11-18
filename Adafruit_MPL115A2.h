@@ -55,6 +55,7 @@ class Adafruit_MPL115A2{
   void begin(void);
   float getPressure(void);
   float getTemperature(void);
+  void getPT(float *P, float *T);
 
  private:
   float _mpl115a2_a0;
