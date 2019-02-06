@@ -1,29 +1,38 @@
-/**************************************************************************/
 /*!
-    @file     Adafruit_MPL115A2.cpp
-    @author   K.Townsend (Adafruit Industries)
-    @license  BSD (see license.txt)
+ *  @file Adafruit_MPL115A2.cpp
+ *
+ *  @mainpage Driver for the Adafruit MPL115A2 barometric pressure sensor
+ *
+ *  @section intro_sec Introduction
+ *
+ *  Driver for the MPL115A2 barometric pressure sensor
+ *
+ *  This is a library for the Adafruit MPL115A2 breakout
+ *  ----> https://www.adafruit.com/products/992
+ *
+ *  Adafruit invests time and resources providing this open source code,
+ *  please support Adafruit and open-source hardware by purchasing
+ *  products from Adafruit!
+ *
+ *  @section author Author
+ *
+ *  K.Townsend (Adafruit Industries)
+ *
+ *  @section license License
+ *
+ *  BSD (see license.txt)
+ *
+ *  @section history
+ *
+ *  v1.0 - First release
+ *  v1.1 - Rick Sellens added casts to make bit shifts work below 22.6C
+ *       - get both P and T with a single call to getPT
+ */
 
-    Driver for the MPL115A2 barometric pressure sensor
-
-    This is a library for the Adafruit MPL115A2 breakout
-    ----> https://www.adafruit.com/products/992
-
-    Adafruit invests time and resources providing this open source code,
-    please support Adafruit and open-source hardware by purchasing
-    products from Adafruit!
-
-    @section  HISTORY
-
-    v1.0 - First release
-    v1.1 - Rick Sellens added casts to make bit shifts work below 22.6C
-         - get both P and T with a single call to getPT
-*/
-/**************************************************************************/
 #if ARDUINO >= 100
- #include "Arduino.h"
+#include "Arduino.h"
 #else
- #include "WProgram.h"
+#include "WProgram.h"
 #endif
 
 #include <Wire.h>
@@ -32,29 +41,26 @@
 
 static uint8_t i2cread(void) {
   uint8_t x;
-  #if ARDUINO >= 100
+#if ARDUINO >= 100
   x = Wire.read();
-  #else
+#else
   x = Wire.receive();
-  #endif
-  //Serial.print("0x"); Serial.println(x, HEX);
+#endif
+  // Serial.print("0x"); Serial.println(x, HEX);
   return x;
 }
 
-
 static void i2cwrite(uint8_t x) {
-  #if ARDUINO >= 100
+#if ARDUINO >= 100
   Wire.write((uint8_t)x);
-  #else
+#else
   Wire.send(x);
-  #endif
+#endif
 }
 
-/**************************************************************************/
 /*!
-    @brief  Gets the factory-set coefficients for this particular sensor
-*/
-/**************************************************************************/
+ *  @brief  Gets the factory-set coefficients for this particular sensor
+ */
 void Adafruit_MPL115A2::readCoefficients() {
   int16_t a0coeff;
   int16_t b1coeff;
@@ -66,12 +72,12 @@ void Adafruit_MPL115A2::readCoefficients() {
   Wire.endTransmission();
 
   Wire.requestFrom(MPL115A2_ADDRESS, 8);
-  a0coeff = (( (uint16_t) i2cread() << 8) | i2cread());
-  b1coeff = (( (uint16_t) i2cread() << 8) | i2cread());
-  b2coeff = (( (uint16_t) i2cread() << 8) | i2cread());
-  c12coeff = (( (uint16_t) (i2cread() << 8) | i2cread())) >> 2;
+  a0coeff = (((uint16_t)i2cread() << 8) | i2cread());
+  b1coeff = (((uint16_t)i2cread() << 8) | i2cread());
+  b2coeff = (((uint16_t)i2cread() << 8) | i2cread());
+  c12coeff = (((uint16_t)(i2cread() << 8) | i2cread())) >> 2;
 
-  /*  
+  /*
   Serial.print("A0 = "); Serial.println(a0coeff, HEX);
   Serial.print("B1 = "); Serial.println(b1coeff, HEX);
   Serial.print("B2 = "); Serial.println(b2coeff, HEX);
@@ -92,11 +98,9 @@ void Adafruit_MPL115A2::readCoefficients() {
   */
 }
 
-/**************************************************************************/
 /*!
-    @brief  Instantiates a new MPL115A2 class
-*/
-/**************************************************************************/
+ *  @brief  Instantiates a new MPL115A2 class
+ */
 Adafruit_MPL115A2::Adafruit_MPL115A2() {
   _mpl115a2_a0 = 0.0F;
   _mpl115a2_b1 = 0.0F;
@@ -104,50 +108,47 @@ Adafruit_MPL115A2::Adafruit_MPL115A2() {
   _mpl115a2_c12 = 0.0F;
 }
 
-/**************************************************************************/
 /*!
-    @brief  Setups the HW (reads coefficients values, etc.)
-*/
-/**************************************************************************/
+ *  @brief  Setups the HW (reads coefficients values, etc.)
+ */
 void Adafruit_MPL115A2::begin() {
   Wire.begin();
   // Read factory coefficient values (this only needs to be done once)
   readCoefficients();
 }
 
-/**************************************************************************/
 /*!
-    @brief  Gets the floating-point pressure level in kPa
-*/
-/**************************************************************************/
+ *  @brief  Gets the floating-point pressure level in kPa
+ *  @return Pressure in kPa
+ */
 float Adafruit_MPL115A2::getPressure() {
-  float     pressureComp,centigrade;
+  float pressureComp, centigrade;
 
   getPT(&pressureComp, &centigrade);
   return pressureComp;
 }
 
-
-/**************************************************************************/
 /*!
-    @brief  Gets the floating-point temperature in Centigrade
-*/
-/**************************************************************************/
+ *  @brief  Gets the floating-point temperature in Centigrade
+ *  @return Temperature in Centigrade
+ */
 float Adafruit_MPL115A2::getTemperature() {
-  float     pressureComp, centigrade;
+  float pressureComp, centigrade;
 
   getPT(&pressureComp, &centigrade);
   return centigrade;
 }
 
-/**************************************************************************/
 /*!
-    @brief  Gets both at once and saves a little time
-*/
-/**************************************************************************/
+ *  @brief  Gets both at once and saves a little time
+ *  @param  *P
+ *          Pointer to pressure value
+ *  @param  *T
+ *          Pointer to temperature value
+ */
 void Adafruit_MPL115A2::getPT(float *P, float *T) {
-  uint16_t 	pressure, temp;
-  float     pressureComp;
+  uint16_t pressure, temp;
+  float pressureComp;
 
   // Get raw pressure and temperature settings
   Wire.beginTransmission(MPL115A2_ADDRESS);
@@ -159,21 +160,19 @@ void Adafruit_MPL115A2::getPT(float *P, float *T) {
   delay(5);
 
   Wire.beginTransmission(MPL115A2_ADDRESS);
-  i2cwrite((uint8_t)MPL115A2_REGISTER_PRESSURE_MSB);  // Register
+  i2cwrite((uint8_t)MPL115A2_REGISTER_PRESSURE_MSB); // Register
   Wire.endTransmission();
 
   Wire.requestFrom(MPL115A2_ADDRESS, 4);
-  pressure = (( (uint16_t) i2cread() << 8) | i2cread()) >> 6;
-  temp = (( (uint16_t) i2cread() << 8) | i2cread()) >> 6;
+  pressure = (((uint16_t)i2cread() << 8) | i2cread()) >> 6;
+  temp = (((uint16_t)i2cread() << 8) | i2cread()) >> 6;
 
   // See datasheet p.6 for evaluation sequence
-  pressureComp = _mpl115a2_a0 + (_mpl115a2_b1 + _mpl115a2_c12 * temp ) * pressure + _mpl115a2_b2 * temp;
+  pressureComp = _mpl115a2_a0 +
+                 (_mpl115a2_b1 + _mpl115a2_c12 * temp) * pressure +
+                 _mpl115a2_b2 * temp;
 
   // Return pressure and temperature as floating point values
-  *P = ((65.0F / 1023.0F) * pressureComp) + 50.0F;        // kPa
-  *T = ((float) temp - 498.0F) / -5.35F +25.0F;           // C
-  
+  *P = ((65.0F / 1023.0F) * pressureComp) + 50.0F; // kPa
+  *T = ((float)temp - 498.0F) / -5.35F + 25.0F;    // C
 }
-
-
-
