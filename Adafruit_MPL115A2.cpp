@@ -35,11 +35,17 @@
 #include "WProgram.h"
 #endif
 
-#include <_wire->h>
+#include <Wire.h>
 
 #include "Adafruit_MPL115A2.h"
 
-static uint8_t i2cread(void) {
+/*!
+ *  @brief  Reads i2c data.
+ *  @param  *_wire
+ *          Pointer to the wire.
+ *  @return Value read fromi2c.
+ */
+uint8_t i2cread(TwoWire *_wire) {
   uint8_t x;
 #if ARDUINO >= 100
   x = _wire->read();
@@ -50,7 +56,14 @@ static uint8_t i2cread(void) {
   return x;
 }
 
-static void i2cwrite(uint8_t x) {
+/*!
+ *  @brief  Writes i2c data.
+ *  @param  *_wire
+ *          Pointer to the wire.
+ *  @param  x
+ *          Value to write.
+ */
+void i2cwrite(TwoWire *_wire, uint8_t x) {
 #if ARDUINO >= 100
   _wire->write((uint8_t)x);
 #else
@@ -68,14 +81,14 @@ void Adafruit_MPL115A2::readCoefficients() {
   int16_t c12coeff;
 
   _wire->beginTransmission(_i2caddr);
-  i2cwrite((uint8_t)MPL115A2_REGISTER_A0_COEFF_MSB);
+  i2cwrite(_wire, (uint8_t)MPL115A2_REGISTER_A0_COEFF_MSB);
   _wire->endTransmission();
 
-  _wire->requestFrom(_i2caddr, 8);
-  a0coeff = (((uint16_t)i2cread() << 8) | i2cread());
-  b1coeff = (((uint16_t)i2cread() << 8) | i2cread());
-  b2coeff = (((uint16_t)i2cread() << 8) | i2cread());
-  c12coeff = (((uint16_t)(i2cread() << 8) | i2cread())) >> 2;
+  _wire->requestFrom(_i2caddr, (uint8_t)8);
+  a0coeff = (((uint16_t)i2cread(_wire) << 8) | i2cread(_wire));
+  b1coeff = (((uint16_t)i2cread(_wire) << 8) | i2cread(_wire));
+  b2coeff = (((uint16_t)i2cread(_wire) << 8) | i2cread(_wire));
+  c12coeff = (((uint16_t)(i2cread(_wire) << 8) | i2cread(_wire))) >> 2;
 
   /*
   Serial.print("A0 = "); Serial.println(a0coeff, HEX);
@@ -112,7 +125,7 @@ Adafruit_MPL115A2::Adafruit_MPL115A2() {
  *  @brief  Setups the HW (reads coefficients values, etc.)
  */
 void Adafruit_MPL115A2::begin() {
-  _i2caddr = MPL115A2_DEFAULT_ADDRESS
+  _i2caddr = MPL115A2_DEFAULT_ADDRESS;
   _wire = &Wire;
   _wire->begin();
   // Read factory coefficient values (this only needs to be done once)
@@ -124,7 +137,7 @@ void Adafruit_MPL115A2::begin() {
  *  @param  *theWire
  */
 void Adafruit_MPL115A2::begin(TwoWire *theWire) {
-  _i2caddr = MPL115A2_DEFAULT_ADDRESS
+  _i2caddr = MPL115A2_DEFAULT_ADDRESS;
   _wire = theWire;
   _wire->begin();
   // Read factory coefficient values (this only needs to be done once)
@@ -191,20 +204,20 @@ void Adafruit_MPL115A2::getPT(float *P, float *T) {
 
   // Get raw pressure and temperature settings
   _wire->beginTransmission(_i2caddr);
-  i2cwrite((uint8_t)MPL115A2_REGISTER_STARTCONVERSION);
-  i2cwrite((uint8_t)0x00);
+  i2cwrite(_wire, (uint8_t)MPL115A2_REGISTER_STARTCONVERSION);
+  i2cwrite(_wire, (uint8_t)0x00);
   _wire->endTransmission();
 
   // Wait a bit for the conversion to complete (3ms max)
   delay(5);
 
   _wire->beginTransmission(_i2caddr);
-  i2cwrite((uint8_t)MPL115A2_REGISTER_PRESSURE_MSB); // Register
+  i2cwrite(_wire, (uint8_t)MPL115A2_REGISTER_PRESSURE_MSB); // Register
   _wire->endTransmission();
 
-  _wire->requestFrom(_i2caddr, 4);
-  pressure = (((uint16_t)i2cread() << 8) | i2cread()) >> 6;
-  temp = (((uint16_t)i2cread() << 8) | i2cread()) >> 6;
+  _wire->requestFrom(_i2caddr, (uint8_t)4);
+  pressure = (((uint16_t)i2cread(_wire) << 8) | i2cread(_wire)) >> 6;
+  temp = (((uint16_t)i2cread(_wire) << 8) | i2cread(_wire)) >> 6;
 
   // See datasheet p.6 for evaluation sequence
   pressureComp = _mpl115a2_a0 +
