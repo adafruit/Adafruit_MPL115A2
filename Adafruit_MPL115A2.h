@@ -10,7 +10,7 @@
 
 #include <Wire.h>
 
-#define MPL115A2_ADDRESS (0x60) /**< I2C address **/
+#define MPL115A2_DEFAULT_ADDRESS (0x60) /**< I2C address **/
 
 #define MPL115A2_REGISTER_PRESSURE_MSB                                         \
   (0x00) /**< 10-bit Pressure ADC output value MSB **/
@@ -38,16 +38,23 @@
 class Adafruit_MPL115A2 {
 public:
   Adafruit_MPL115A2();
-  void begin(void);
-  float getPressure(void);
-  float getTemperature(void);
+  void begin();
+  void begin(TwoWire *theWire);
+  void begin(uint8_t addr);
+  void begin(uint8_t addr, TwoWire *theWire);
+
+  float getPressure();
+  float getTemperature();
   void getPT(float *P, float *T);
 
 private:
+  TwoWire *_wire;
+  uint8_t _i2caddr;
+
   float _mpl115a2_a0;
   float _mpl115a2_b1;
   float _mpl115a2_b2;
   float _mpl115a2_c12;
 
-  void readCoefficients(void);
+  void readCoefficients();
 };
