@@ -1,4 +1,4 @@
-# Adafruit_MPL115A2 [![Build Status](https://travis-ci.com/adafruit/Adafruit_MPL115A2.svg?branch=master)](https://travis-ci.com/adafruit/Adafruit_MPL115A2)
+# Adafruit MPL115A2 Library[![Build Status](https://github.com/adafruit/Adafruit_MPL115A2/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit_MPL115A2/actions)
 
 <a href="https://www.adafruit.com/products/992"><img src="assets/board.jpg?raw=true" width="500px"></a>
 
