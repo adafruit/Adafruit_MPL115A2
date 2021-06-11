@@ -101,9 +101,7 @@ bool Adafruit_MPL115A2::begin(TwoWire *theWire) {
  *  @brief  Setups the HW (reads coefficients values, etc.)
  *  @param  addr
  */
-bool Adafruit_MPL115A2::begin(uint8_t addr) {
-  return begin(addr, &Wire);
-}
+bool Adafruit_MPL115A2::begin(uint8_t addr) { return begin(addr, &Wire); }
 
 /*!
  *  @brief  Setups the HW (reads coefficients values, etc.)
@@ -115,7 +113,7 @@ bool Adafruit_MPL115A2::begin(uint8_t addr, TwoWire *theWire) {
     delete _i2c_dev;
   }
   _i2c_dev = new Adafruit_I2CDevice(addr, theWire);
-  
+
   if (!_i2c_dev->begin()) {
     return false;
   }
