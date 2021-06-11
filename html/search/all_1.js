@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['begin',['begin',['../class_adafruit___m_p_l115_a2.html#ab94b619bb6dc3342e635b3daa0ee3e2f',1,'Adafruit_MPL115A2::begin()'],['../class_adafruit___m_p_l115_a2.html#a5f12bd7fa14cf2cc76bf499a5348e82c',1,'Adafruit_MPL115A2::begin(TwoWire *theWire)'],['../class_adafruit___m_p_l115_a2.html#a422229782bb63c7138bcf59261509ce0',1,'Adafruit_MPL115A2::begin(uint8_t addr)'],['../class_adafruit___m_p_l115_a2.html#ab675eb3b4af701e3d07e584500ca01b2',1,'Adafruit_MPL115A2::begin(uint8_t addr, TwoWire *theWire)']]]
+  ['begin',['begin',['../class_adafruit___m_p_l115_a2.html#aae4f572bd1b416fb82ab8b64c049666b',1,'Adafruit_MPL115A2::begin()'],['../class_adafruit___m_p_l115_a2.html#a150d5afd0059df3c939a8f94c372ccf0',1,'Adafruit_MPL115A2::begin(TwoWire *theWire)'],['../class_adafruit___m_p_l115_a2.html#a24569a96e20411a5ed3b741864bb4fad',1,'Adafruit_MPL115A2::begin(uint8_t addr)'],['../class_adafruit___m_p_l115_a2.html#a452d9ba04d25bfb5ff599852ffd6907e',1,'Adafruit_MPL115A2::begin(uint8_t addr, TwoWire *theWire)']]]
 ];
