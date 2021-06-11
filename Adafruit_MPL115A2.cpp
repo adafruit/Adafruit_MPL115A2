@@ -122,6 +122,7 @@ bool Adafruit_MPL115A2::begin(uint8_t addr, TwoWire *theWire) {
 
   // Read factory coefficient values (this only needs to be done once)
   readCoefficients();
+  return true;
 }
 
 /*!
