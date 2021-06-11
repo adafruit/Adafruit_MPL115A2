@@ -5,12 +5,9 @@
 #ifndef _ADAFRUIT_MPL115A2_H
 #define _ADAFRUIT_MPL115A2_H
 
-#if ARDUINO >= 100
 #include "Arduino.h"
-#else
-#include "WProgram.h"
-#endif
-
+#include <Adafruit_BusIO_Register.h>
+#include <Adafruit_I2CDevice.h>
 #include <Wire.h>
 
 #define MPL115A2_DEFAULT_ADDRESS (0x60) /**< I2C address **/
@@ -41,18 +38,17 @@
 class Adafruit_MPL115A2 {
 public:
   Adafruit_MPL115A2();
-  void begin();
-  void begin(TwoWire *theWire);
-  void begin(uint8_t addr);
-  void begin(uint8_t addr, TwoWire *theWire);
+  bool begin();
+  bool begin(TwoWire *theWire);
+  bool begin(uint8_t addr);
+  bool begin(uint8_t addr, TwoWire *theWire);
 
   float getPressure();
   float getTemperature();
   void getPT(float *P, float *T);
 
 private:
-  TwoWire *_wire;
-  uint8_t _i2caddr;
+  Adafruit_I2CDevice *_i2c_dev = NULL;
 
   float _mpl115a2_a0;
   float _mpl115a2_b1;

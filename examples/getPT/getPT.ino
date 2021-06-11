@@ -9,7 +9,10 @@ void setup(void)
   Serial.println("Hello!");
   
   Serial.println("Getting barometric pressure ...");
-  mpl115a2.begin();
+  if (! mpl115a2.begin()) {
+    Serial.println("Sensor not found! Check wiring");
+    while (1);
+  }
 }
 
 void loop(void) 
