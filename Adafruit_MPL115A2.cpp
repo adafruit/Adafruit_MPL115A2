@@ -84,6 +84,7 @@ Adafruit_MPL115A2::Adafruit_MPL115A2() {
 
 /*!
  *  @brief  Setups the HW (reads coefficients values, etc.)
+ *  @return Returns true if the device was found
  */
 bool Adafruit_MPL115A2::begin() {
   return begin(MPL115A2_DEFAULT_ADDRESS, &Wire);
@@ -92,6 +93,7 @@ bool Adafruit_MPL115A2::begin() {
 /*!
  *  @brief  Setups the HW (reads coefficients values, etc.)
  *  @param  *theWire
+ *  @return Returns true if the device was found
  */
 bool Adafruit_MPL115A2::begin(TwoWire *theWire) {
   return begin(MPL115A2_DEFAULT_ADDRESS, theWire);
@@ -100,6 +102,7 @@ bool Adafruit_MPL115A2::begin(TwoWire *theWire) {
 /*!
  *  @brief  Setups the HW (reads coefficients values, etc.)
  *  @param  addr
+ *  @return Returns true if the device was found
  */
 bool Adafruit_MPL115A2::begin(uint8_t addr) { return begin(addr, &Wire); }
 
@@ -107,6 +110,7 @@ bool Adafruit_MPL115A2::begin(uint8_t addr) { return begin(addr, &Wire); }
  *  @brief  Setups the HW (reads coefficients values, etc.)
  *  @param  addr
  *  @param  *theWire
+ *  @return Returns true if the device was found
  */
 bool Adafruit_MPL115A2::begin(uint8_t addr, TwoWire *theWire) {
   if (_i2c_dev) {
