@@ -6,7 +6,6 @@
 #define _ADAFRUIT_MPL115A2_H
 
 #include "Arduino.h"
-#include <Adafruit_BusIO_Register.h>
 #include <Adafruit_I2CDevice.h>
 #include <Wire.h>
 
